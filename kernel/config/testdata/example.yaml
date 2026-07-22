@@ -1,0 +1,14 @@
+devices:
+  plc-001:
+    name: plc-001
+    network: tcp
+    addr: "192.168.1.10:502"
+    timeout: 3s
+    pool:
+      max_size: 5
+      idle_timeout: 60s
+  sensor-01:
+    name: sensor-01
+    network: tcp
+    addr: "192.168.1.11:1883"
+    timeout: 5s
