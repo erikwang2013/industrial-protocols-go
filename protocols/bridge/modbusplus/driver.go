@@ -15,6 +15,13 @@ func NewGatewayDriver(address string) (bridge.Bridge, kernel.Codec, error) {
 	return bridge.NewGatewayBridge(address), &modbusplusCodec{}, nil
 }
 
+// NewCmdDriver creates a Modbus Plus codec paired with a CmdBridge
+// wrapping the sa85_cli command-line utility.
+func NewCmdDriver(toolPath string) (bridge.Bridge, kernel.Codec, error) {
+	b := bridge.NewCmdBridge(toolPath, "--node", "1", "--read")
+	return b, &modbusplusCodec{}, nil
+}
+
 // ReadyHandler returns a pipeline.Handler that starts the bridge and provides
 // a request/response loop with a 5-second timeout and 3 retries.
 func ReadyHandler(address string) (pipeline.Handler, error) {
