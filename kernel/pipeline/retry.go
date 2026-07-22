@@ -1,3 +1,5 @@
+// Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+
 package pipeline
 
 import (
@@ -7,14 +9,17 @@ import (
 	"github.com/erikwang2013/industrial-protocols-go/kernel"
 )
 
+// BackoffFunc 根据当前尝试次数计算等待时长。
 type BackoffFunc func(attempt int) time.Duration
 
+// LinearBackoff 线性退避：每次等待 base * attempt
 func LinearBackoff(base time.Duration) BackoffFunc {
 	return func(attempt int) time.Duration {
 		return base * time.Duration(attempt)
 	}
 }
 
+// ExponentialBackoff 指数退避：每次等待 base * 2^(attempt-1)
 func ExponentialBackoff(base time.Duration) BackoffFunc {
 	return func(attempt int) time.Duration {
 		d := base
@@ -25,6 +30,7 @@ func ExponentialBackoff(base time.Duration) BackoffFunc {
 	}
 }
 
+// JitterBackoff 抖动退避：在线性退避基础上增加随机偏移
 func JitterBackoff(base time.Duration) BackoffFunc {
 	return func(attempt int) time.Duration {
 		d := base * time.Duration(attempt)
@@ -32,6 +38,7 @@ func JitterBackoff(base time.Duration) BackoffFunc {
 	}
 }
 
+// Retry 重试中间件。在 maxAttempts 次内重试失败的请求。
 func Retry(maxAttempts int, backoff BackoffFunc) Middleware {
 	return func(next Handler) Handler {
 		return func(ctx context.Context, req *kernel.Request) (*kernel.Response, error) {

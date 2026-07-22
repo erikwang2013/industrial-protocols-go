@@ -1,3 +1,5 @@
+// Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+
 package safej1850
 
 import "github.com/erikwang2013/industrial-protocols-go/kernel"

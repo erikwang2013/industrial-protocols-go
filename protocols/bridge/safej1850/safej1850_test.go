@@ -1,3 +1,5 @@
+// Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+
 package safej1850
 
 import "testing"

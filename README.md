@@ -1,3 +1,5 @@
+[English](README.en.md) | 中文
+
 # Industrial Protocols Go
 
 Go 语言工业网络通信协议集 —— 分层 + 中间件架构，覆盖 40 种工业协议，14 个纯软实现 + 26 个硬件 SDK（全部带驱动）。
