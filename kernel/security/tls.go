@@ -12,8 +12,8 @@ import (
 	"github.com/erikwang2013/industrial-protocols-go/kernel/transport"
 )
 
-// TLSConfig builds a tls.Config from PEM-encoded certificate files.
-// caFile is optional; pass an empty string for server-only authentication.
+// TLSConfig 从证书文件创建 TLS 配置。
+// caFile 可选，传入空字符串表示仅进行服务端认证。
 func TLSConfig(certFile, keyFile, caFile string) (*tls.Config, error) {
 	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
 	if err != nil {
@@ -58,8 +58,7 @@ type secureTransport struct {
 	conn  *tls.Conn
 }
 
-// NewSecureTransport performs a TLS client handshake over inner and returns
-// a Transport that encrypts all reads and writes.
+// NewSecureTransport 用 TLS 包装一个已有的 Transport，返回加密传输层。
 func NewSecureTransport(inner transport.Transport, cfg *tls.Config) (transport.Transport, error) {
 	adapter := &netConnAdapter{inner}
 	conn := tls.Client(adapter, cfg)

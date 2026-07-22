@@ -8,10 +8,14 @@ import (
 	"sync"
 )
 
+// ErrPoolClosed 表示连接池已关闭。
 var ErrPoolClosed = errors.New("connection: pool closed")
 
+// ErrPoolExhausted 表示连接池已耗尽，无可用连接。
 var ErrPoolExhausted = errors.New("connection: pool exhausted")
 
+// ConnPool 基于 channel 的通用连接池。
+// 使用工厂函数创建新连接，支持最大连接数限制和平滑关闭。
 type ConnPool struct {
 	mu      sync.Mutex
 	conns   chan net.Conn
@@ -21,6 +25,7 @@ type ConnPool struct {
 	closed  bool
 }
 
+// NewConnPool 创建连接池。
 func NewConnPool(factory func() (net.Conn, error), maxSize int) *ConnPool {
 	if maxSize < 1 {
 		maxSize = 1

@@ -11,6 +11,8 @@ import (
 	"github.com/erikwang2013/industrial-protocols-go/kernel/transport"
 )
 
+// ConnectionManager 管理设备连接的生命周期。
+// 支持三种策略：Lazy（按需连接）、Eager（注册时连接）、Pooled（连接池复用）。
 type ConnectionManager struct {
 	configs  map[string]*DeviceConfig
 	pools    map[string]*ConnPool
@@ -18,6 +20,7 @@ type ConnectionManager struct {
 	mu       sync.RWMutex
 }
 
+// NewManager 创建连接管理器。strategy 为 nil 时默认使用 LazyStrategy。
 func NewManager(strategy ConnStrategy) *ConnectionManager {
 	if strategy == nil {
 		strategy = &LazyStrategy{}
@@ -29,6 +32,7 @@ func NewManager(strategy ConnStrategy) *ConnectionManager {
 	}
 }
 
+// Register 注册一个设备配置。
 func (m *ConnectionManager) Register(cfg *DeviceConfig) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -61,6 +65,7 @@ func (m *ConnectionManager) Register(cfg *DeviceConfig) error {
 	return nil
 }
 
+// Acquire 获取一个就绪的 Transport。池化策略时从连接池获取，其他策略时新建连接。
 func (m *ConnectionManager) Acquire(name string) (transport.Transport, error) {
 	m.mu.RLock()
 	cfg, ok := m.configs[name]
@@ -84,6 +89,7 @@ func (m *ConnectionManager) Acquire(name string) (transport.Transport, error) {
 	return &simpleTransport{conn: conn, addr: cfg.Addr, alive: true}, nil
 }
 
+// Release 归还 Transport。池化策略时放回池中，其他策略时关闭连接。
 func (m *ConnectionManager) Release(t transport.Transport) {
 	if pt, ok := t.(*poolTransport); ok {
 		pt.pool.Put(pt.conn)
@@ -92,6 +98,7 @@ func (m *ConnectionManager) Release(t transport.Transport) {
 	t.Close()
 }
 
+// Health 健康检查，返回设备的健康状态和延迟。
 func (m *ConnectionManager) Health(name string) HealthStatus {
 	start := time.Now()
 	tr, err := m.Acquire(name)
@@ -102,6 +109,7 @@ func (m *ConnectionManager) Health(name string) HealthStatus {
 	return HealthStatus{Healthy: true, LatencyMs: float64(time.Since(start).Microseconds()) / 1000.0}
 }
 
+// Shutdown 关闭所有连接池。
 func (m *ConnectionManager) Shutdown() {
 	m.mu.Lock()
 	defer m.mu.Unlock()

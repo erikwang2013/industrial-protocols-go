@@ -27,10 +27,12 @@ type deviceYAML struct {
 	Pool    *poolYAML `yaml:"pool,omitempty"`
 }
 
+// ConfigRepository 设备配置仓库。从 YAML/JSON 文件加载设备连接参数。
 type ConfigRepository struct {
 	devices map[string]*connection.DeviceConfig
 }
 
+// Load 从文件路径加载配置。
 func Load(path string) (*ConfigRepository, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -66,11 +68,13 @@ func Load(path string) (*ConfigRepository, error) {
 	return repo, nil
 }
 
+// Get 按名称查找设备配置。
 func (r *ConfigRepository) Get(name string) (*connection.DeviceConfig, bool) {
 	cfg, ok := r.devices[name]
 	return cfg, ok
 }
 
+// All 返回所有设备配置的副本。
 func (r *ConfigRepository) All() map[string]*connection.DeviceConfig {
 	result := make(map[string]*connection.DeviceConfig, len(r.devices))
 	for k, v := range r.devices {

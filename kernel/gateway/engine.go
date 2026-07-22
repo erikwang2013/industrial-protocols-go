@@ -10,14 +10,18 @@ import (
 	"github.com/erikwang2013/industrial-protocols-go/kernel/transport"
 )
 
+// GatewayEngine 协议转换引擎。通过规则将源协议响应映射为目标协议请求。
 type GatewayEngine struct {
 	rules []Rule
 }
 
+// New 创建协议转换引擎。
 func New() *GatewayEngine { return &GatewayEngine{} }
 
+// Add 添加转换规则。
 func (e *GatewayEngine) Add(rule Rule) { e.rules = append(e.rules, rule) }
 
+// Transform 执行一次协议转换：读源设备 → 解码 → 映射 → 编码 → 写目标设备。
 func (e *GatewayEngine) Transform(ctx context.Context, srcTransport, dstTransport transport.Transport, req *kernel.Request) (*kernel.Response, error) {
 	for _, rule := range e.rules {
 		srcName := rule.Src.Name()

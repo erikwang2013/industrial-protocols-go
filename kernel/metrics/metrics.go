@@ -2,9 +2,7 @@
 
 package metrics
 
-// Recorder provides a simple interface for recording metrics.
-// It supports incrementing counters and observing numeric values
-// with optional labels.
+// Recorder 指标采集接口。内置 Prometheus 和 noop 两种实现。
 type Recorder interface {
 	Inc(name string, labels map[string]string)
 	Observe(name string, value float64, labels map[string]string)
@@ -15,6 +13,5 @@ type noopRecorder struct{}
 func (n noopRecorder) Inc(name string, labels map[string]string)           {}
 func (n noopRecorder) Observe(name string, v float64, labels map[string]string) {}
 
-// NoopRecorder returns a Recorder implementation that discards all metrics.
-// It can be used as a default when no metrics backend is configured.
+// NoopRecorder 返回一个不执行任何操作的 Recorder。
 func NoopRecorder() Recorder { return noopRecorder{} }

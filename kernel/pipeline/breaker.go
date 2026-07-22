@@ -10,6 +10,8 @@ import (
 	"github.com/erikwang2013/industrial-protocols-go/kernel"
 )
 
+// CircuitBreaker 熔断器。当连续失败达到阈值时打开熔断，
+// 拒绝后续请求，冷却时间后进入半开状态尝试恢复。
 type CircuitBreaker struct {
 	threshold   int
 	cooldown    time.Duration
@@ -53,6 +55,7 @@ func (cb *CircuitBreaker) Middleware() Middleware {
 	}
 }
 
+// NewCircuitBreaker 创建熔断器。threshold 为失败阈值，cooldown 为冷却时间。
 func NewCircuitBreaker(threshold int, cooldown time.Duration) *CircuitBreaker {
 	return &CircuitBreaker{threshold: threshold, cooldown: cooldown}
 }

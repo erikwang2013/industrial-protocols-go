@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// Event is a device- or system-level message dispatched through the Bus.
+// Event 事件数据结构。
 type Event struct {
 	Type      string
 	Device    string
@@ -15,16 +15,14 @@ type Event struct {
 	Data      map[string]any
 }
 
-// Bus is a channel-based, zero-dependency event bus that supports
-// multiple subscribers with non-blocking broadcast emission.
+// Bus 事件总线。基于 channel 实现，支持多订阅者 fan-out 广播。
 type Bus struct {
 	mu   sync.RWMutex
 	subs []chan Event
 	buf  int
 }
 
-// NewBus creates a Bus where each subscriber channel is buffered
-// with the given capacity.
+// NewBus 创建带缓冲的事件总线。
 func NewBus(buffer int) *Bus {
 	return &Bus{buf: buffer}
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/erikwang2013/industrial-protocols-go/kernel"
 )
 
+// Logger 日志中间件。记录每次请求的函数名、地址、耗时和错误信息。
 func Logger(logger *log.Logger) Middleware {
 	return func(next Handler) Handler {
 		return func(ctx context.Context, req *kernel.Request) (*kernel.Response, error) {
