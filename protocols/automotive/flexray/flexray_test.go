@@ -27,11 +27,32 @@ func TestProtocolInterface(t *testing.T) {
 	}
 }
 
+func TestProtocolSerialVariant(t *testing.T) {
+	p := New()
+	c, err := p.NewCodec("serial")
+	if err != nil {
+		t.Fatalf("NewCodec(serial) returned error: %v", err)
+	}
+	if c == nil {
+		t.Fatal("NewCodec(serial) returned nil codec")
+	}
+}
+
 func TestProtocolRejectsUnknownVariant(t *testing.T) {
 	p := New()
-	_, err := p.NewCodec("serial")
+	_, err := p.NewCodec("invalid")
 	if err == nil {
 		t.Error("expected error for unknown variant")
+	}
+}
+
+func TestDriverNewSerialDriver(t *testing.T) {
+	b, c, err := NewSerialDriver("/dev/ttyUSB0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if b == nil || c == nil {
+		t.Error("expected non-nil bridge and codec")
 	}
 }
 

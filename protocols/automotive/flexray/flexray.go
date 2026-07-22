@@ -18,17 +18,19 @@ func New() *FlexRayProtocol { return &FlexRayProtocol{} }
 func (p *FlexRayProtocol) Name() string { return "flexray" }
 
 // Variants returns supported transport variants.
-func (p *FlexRayProtocol) Variants() []string { return []string{"can"} }
+func (p *FlexRayProtocol) Variants() []string { return []string{"can", "serial"} }
 
 // DefaultPort returns the default port (0 for CAN bus).
 func (p *FlexRayProtocol) DefaultPort() int { return 0 }
 
-// NewCodec creates a codec for the given variant. Only "can" is supported.
+// NewCodec creates a codec for the given variant.
 func (p *FlexRayProtocol) NewCodec(v string) (kernel.Codec, error) {
-	if v != "can" {
+	switch v {
+	case "can", "serial":
+		return &flexrayCodec{slotID: 1, baseCycle: 0}, nil
+	default:
 		return nil, fmt.Errorf("flexray: unsupported variant %q", v)
 	}
-	return &flexrayCodec{slotID: 1, baseCycle: 0}, nil
 }
 
 // flexrayCodec encodes/decodes FlexRay frames over CAN bus.
