@@ -1,6 +1,10 @@
 package sercos1
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/erikwang2013/industrial-protocols-go/kernel"
+)
 
 func TestProtocol_ImplementsInterface(t *testing.T) {
 	p := New()
@@ -13,8 +17,143 @@ func TestProtocol_ImplementsInterface(t *testing.T) {
 	if p.DefaultPort() < 0 {
 		t.Error("default port must not be negative")
 	}
+}
+
+func TestProtocol_NewCodec(t *testing.T) {
+	p := New()
+	for _, v := range []string{"fiber", "cmd"} {
+		c, err := p.NewCodec(v)
+		if err != nil {
+			t.Errorf("NewCodec(%q) returned error: %v", v, err)
+		}
+		if c == nil {
+			t.Errorf("NewCodec(%q) returned nil codec", v)
+		}
+	}
+}
+
+func TestProtocol_RejectsUnknownVariant(t *testing.T) {
+	p := New()
 	_, err := p.NewCodec("invalid")
 	if err == nil {
-		t.Error("stub NewCodec should return error")
+		t.Error("expected error for unknown variant")
+	}
+}
+
+func TestEncodeRead(t *testing.T) {
+	c, err := New().NewCodec("cmd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := c.Encode(&kernel.Request{
+		Function: "read",
+		Address:  "0x0100",
+		Count:    4,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := "read 0x0100 4\n"
+	if string(data) != expected {
+		t.Errorf("expected %q, got %q", expected, string(data))
+	}
+}
+
+func TestEncodeReadDefaults(t *testing.T) {
+	c, err := New().NewCodec("cmd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := c.Encode(&kernel.Request{Function: "read"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := "read 0x0000 1\n"
+	if string(data) != expected {
+		t.Errorf("expected %q, got %q", expected, string(data))
+	}
+}
+
+func TestEncodeWrite(t *testing.T) {
+	c, err := New().NewCodec("cmd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := c.Encode(&kernel.Request{
+		Function: "write",
+		Address:  "0x0200",
+		Data:     []byte{0x01, 0x02, 0x03, 0x04},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := "write 0x0200 01020304\n"
+	if string(data) != expected {
+		t.Errorf("expected %q, got %q", expected, string(data))
+	}
+}
+
+func TestEncodeStatus(t *testing.T) {
+	c, err := New().NewCodec("cmd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := c.Encode(&kernel.Request{Function: "status"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := "status\n"
+	if string(data) != expected {
+		t.Errorf("expected %q, got %q", expected, string(data))
+	}
+}
+
+func TestEncodeUnknownFunction(t *testing.T) {
+	c, err := New().NewCodec("cmd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = c.Encode(&kernel.Request{Function: "bogus"})
+	if err == nil {
+		t.Error("expected error for unknown function")
+	}
+}
+
+func TestDecodeStatus(t *testing.T) {
+	c, err := New().NewCodec("cmd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := c.Decode([]byte("STATUS: Drive Ready"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.Metadata["state"] == nil {
+		t.Error("expected state metadata")
+	}
+}
+
+func TestDecodeHex(t *testing.T) {
+	c, err := New().NewCodec("cmd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := c.Decode([]byte("0102 0304"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := []byte{0x01, 0x02, 0x03, 0x04}
+	if string(resp.Data) != string(expected) {
+		t.Errorf("expected %X, got %X", expected, resp.Data)
+	}
+}
+
+func TestDriverNewCmdDriver(t *testing.T) {
+	b, c, err := NewCmdDriver("/usr/bin/sercos_cli")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if b == nil || c == nil {
+		t.Error("expected non-nil bridge and codec")
 	}
 }
