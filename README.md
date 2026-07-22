@@ -1,6 +1,6 @@
 # Industrial Protocols Go
 
-Go 语言工业网络通信协议集 —— 分层 + 中间件架构，覆盖 40 种工业协议，14 个完整实现 + 26 个骨架。
+Go 语言工业网络通信协议集 —— 分层 + 中间件架构，覆盖 40 种工业协议，14 个纯软实现 + 26 个硬件 SDK（全部带驱动）。
 
 > 参考 PHP 实现: [github.com/erikwang2013/industrial-protocols](https://github.com/erikwang2013/industrial-protocols)
 
@@ -25,7 +25,7 @@ Go 语言工业网络通信协议集 —— 分层 + 中间件架构，覆盖 40
 │  Codec (Encode/Decode)           Transport        │
 │  每协议独立模块                    (TCP/UDP/Serial)  │
 │                                                │
-│  14 Full Impl   +   26 Stub                      │
+│  14 Pure-Soft   +   26 Hardware SDKs (with drivers)│
 └──────────────────────────────────────────────────┘
 ```
 
@@ -117,7 +117,7 @@ Response ← Codec.Decode ← Transport.Read
 | **OPC UA** | TCP | 4840 | Binary HEL + OpenSecureChannel |
 | **PROFINET** | UDP | 34964 | DCP Identify/Set + Record Data Read/Write |
 
-### 现场总线（4/11 已完成）
+### 现场总线（11/11 — 4 纯软 + 7 硬件 SDK）
 
 | 协议 | 传输 | 端口 | 功能 |
 |------|------|------|------|
@@ -125,13 +125,13 @@ Response ← Codec.Decode ← Transport.Read
 | **CC-Link** | RS-485 | — | 主从轮询, CRC-16/XMODEM |
 | **DNP3** | TCP, Serial | 20000 | 传输层分段/重组, Class 0 轮询, CRC-16/DNP |
 | **IEC 61850** | TCP | 102 | MMS Initiate/Conclude, Read/Write, BER-TLV |
-| PROFIBUS | Serial | — | *stub — 需 CP 5611 硬件* |
-| CANopen | CAN | — | *stub — 需 CAN 接口* |
-| DeviceNet | CAN | — | *stub — 需 DeviceNet 扫描器* |
-| Foundation Fieldbus | Serial | — | *stub — 需 FF 接口* |
-| AS-Interface | Serial | — | *stub — 需 ASi 网关* |
-| IO-Link | Serial | — | *stub — 需 IO-Link Master* |
-| CC-Link IE | Ethernet | — | *stub — 需网关* |
+| **PROFIBUS** | Serial | — | 纯软实现 — 需 CP 5611 硬件 |
+| **CANopen** | CAN, Gateway | — | SDO 读/写, NMT 启停/复位, Heartbeat |
+| **DeviceNet** | CAN, Gateway | — | Explicit Messaging, Poll, I/O 连接 |
+| **Foundation Fieldbus** | Serial | — | 纯软实现 — 需 FF H1 接口卡 |
+| **AS-Interface** | Serial | — | 纯软实现 — 需 ASi 网关 |
+| **IO-Link** | Serial | — | 纯软实现 — 需 IO-Link Master |
+| **CC-Link IE** | Ethernet | — | 纯软实现 — 需 CC-Link IE 网关 |
 
 ### IoT / 消息（2/2 已完成）
 
@@ -140,30 +140,47 @@ Response ← Codec.Decode ← Transport.Read
 | **MQTT** | TCP, WS | 1883 | 3.1.1 CONNECT/PUBLISH/SUBSCRIBE/PING |
 | **HART-IP** | TCP, UDP | 5094 | HART over TCP, 复用 HART 编解码 |
 
-### 汽车总线（2/5 已完成）
+### 汽车总线（5/5 — 2 纯软 + 3 硬件 SDK）
 
 | 协议 | 传输 | 波特率 | 功能 |
 |------|------|--------|------|
 | **LIN** | UART | — | 主从帧, PID 校验, Classic/Enhanced Checksum |
 | **K-Line** | Serial | 10400 | ISO 9141/14230, 5-baud Fast Init, OBD-II SID 01/03/09 |
-| FlexRay | Serial | — | *stub — 需 FlexRay 控制器* |
-| SAE J1850 | Serial | — | *stub — 需 J1850 接口* |
-| MOST | Optical | — | *stub — 需 MOST 接口* |
+| **FlexRay** | CAN, Serial | — | Slot/Frame 编解码, CRC-16/XMODEM, SocketCAN + SerialBridge |
+| **SAE J1850** | CAN | — | PWM/VPW 编解码, Mode 01/03/0A, CRC-8 |
+| **MOST** | Serial | — | Hex-frame 编解码, Read/Write/Status, SerialBridge |
 
-### 楼宇 / 照明（1/2 已完成）
+### 楼宇 / 照明（2/2 — 1 纯软 + 1 硬件 SDK）
 
 | 协议 | 传输 | 功能 |
 |------|------|------|
 | **DALI** | Serial | 16-bit 前向帧, 8-bit 后向帧, 标准命令 (Off/Max/Dim) |
-| LonWorks | Serial | *stub — 需 Neuron 芯片* |
+| **LonWorks** | Serial | 纯软编解码 — 需 Neuron 芯片或网关 |
 
-### 硬件桥接（0/12 — 全部 stub）
+### 硬件桥接（12/12 — 全部有 CmdBridge/SerialBridge 驱动）
 
-EtherCAT, POWERLINK, SERCOS III, SERCOS I/II, ControlNet, Interbus, WorldFIP, Lightbus, Modbus Plus, ISA100, WirelessHART, SAE J1850 — *需特定硬件/FPGA/网关*
+| 协议 | SDK 类型 | 功能 |
+|------|----------|------|
+| **EtherCAT** | CmdBridge + hex-codec | Upload/Download/Slaves 子命令, CoE 十六进制编解码 |
+| **POWERLINK** | CmdBridge + hex-codec | Read/Write/Status 子命令, SoC/Preq/Pres 帧 |
+| **SERCOS III** | CmdBridge + hex-codec | Read/Write/Phase 子命令, 阶段转换 (NRT→CP4) |
+| **SERCOS I/II** | CmdBridge + hex-codec | Read/Write/Status, 光纤环拓扑 |
+| **ControlNet** | CmdBridge + hex-codec | Read/Write/Status, CTDMA 调度, 生产者/消费者 |
+| **Interbus** | CmdBridge | Read/Decode, 环形拓扑, IBS CMD 帧 |
+| **WorldFIP** | CmdBridge | Read/Write/Decode, 生产者/消费者, 总线仲裁器 |
+| **Lightbus** | CmdBridge | Read/Decode, 光纤互连, 32节点 |
+| **Modbus Plus** | CmdBridge + hex-codec | Read/Write/Decode, 令牌传递, 对等 |
+| **ISA100.11a** | CmdBridge + hex-codec | Read/Write/List, 6LoWPAN 无线, 网状 |
+| **WirelessHART** | CmdBridge + hex-codec | Read/Write/Scan, TSMP MAC, 自组织 |
+| **SAE J1850** | CmdBridge | 车规诊断转 CmdBridge, 需 J1850 接口 |
 
-### 系统总线（0/3 — 全部 stub）
+### 系统总线（3/3 — 全部有 sysfs/procfs 驱动）
 
-PCI/PCIe, VME/VPX, CompactPCI — *需内核驱动/桥接模块*
+| 协议 | SDK 类型 | 功能 |
+|------|----------|------|
+| **PCI/PCIe** | sysfs — `/sys/bus/pci/devices/<BDF>/config` | 配置空间读写, PipeTransport, 需 CAP_SYS_ADMIN |
+| **VME/VPX** | procfs — `/proc/vme/<slot>` | A16/A24/A32 编址, PipeTransport, 需 vme_tsi148 模块 |
+| **CompactPCI** | sysfs — `/sys/bus/pci/devices/<BDF>/config` | PICMG 2.0, 热插拔, 3U/6U, 需 cpci_hotplug |
 
 ---
 
@@ -366,12 +383,12 @@ industrial-protocols-go/
 │
 ├── protocols/                    # 40 协议模块
 │   ├── ethernet/                 # 5 工业以太网（全部完成）
-│   ├── fieldbus/                 # 11 现场总线（4 完成）
+│   ├── fieldbus/                 # 11 现场总线（4 纯软 + 7 硬件 SDK）
 │   ├── iot/                      # 2 IoT/消息（全部完成）
-│   ├── automotive/               # 5 汽车总线（2 完成）
-│   ├── building/                 # 2 楼宇/照明（1 完成）
-│   ├── bridge/                   # 12 硬件桥接（stub）
-│   └── system/                   # 3 系统总线（stub）
+│   ├── automotive/               # 5 汽车总线（2 纯软 + 3 硬件 SDK）
+│   ├── building/                 # 2 楼宇/照明（1 纯软 + 1 硬件 SDK）
+│   ├── bridge/                   # 12 硬件桥接（CmdBridge/SerialBridge）
+│   └── system/                   # 3 系统总线（sysfs/procfs 驱动）
 │
 ├── examples/modbus_basic/        # Modbus TCP 示例
 ├── _tools/                       # Makefile + 辅助脚本
