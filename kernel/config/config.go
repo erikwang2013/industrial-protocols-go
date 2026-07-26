@@ -3,6 +3,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -57,7 +58,11 @@ func Load(path string) (*ConfigRepository, error) {
 		if dy.Pool != nil {
 			idleTimeout := 60 * time.Second
 			if dy.Pool.IdleTimeout != "" {
-				idleTimeout, _ = time.ParseDuration(dy.Pool.IdleTimeout)
+				var err2 error
+			idleTimeout, err2 = time.ParseDuration(dy.Pool.IdleTimeout)
+			if err2 != nil {
+				return nil, fmt.Errorf("config: invalid idle_timeout for device %q: %w", key, err2)
+			}
 			}
 			dc.Pool = &connection.PoolConfig{
 				MaxSize: dy.Pool.MaxSize, IdleTimeout: idleTimeout,

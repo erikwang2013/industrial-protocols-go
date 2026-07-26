@@ -8,7 +8,7 @@ import (
 	"github.com/erikwang2013/industrial-protocols-go/kernel"
 )
 
-// LonWorksProtocol implements the keinel.Protocol interface for LonWorks
+// LonWorksProtocol implements the kernel.Protocol interface for LonWorks
 // gateways (Echelon U60/U70 network interface).
 type LonWorksProtocol struct{}
 
@@ -37,7 +37,7 @@ func (c *lonworksCodec) Encode(req *kernel.Request) ([]byte, error) {
 	return []byte(cmd), nil
 }
 
-// Decode returns the raw gateway response as a keinel.Response.
+// Decode returns the raw gateway response as a kernel.Response.
 func (c *lonworksCodec) Decode(data []byte) (*kernel.Response, error) {
 	return &kernel.Response{Data: data}, nil
 }

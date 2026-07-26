@@ -4,6 +4,7 @@ package transport
 
 import (
 	"errors"
+	"sync"
 )
 
 // ReadWriteCloser is the subset of io.ReadWriteCloser needed for a serial port.
@@ -15,6 +16,7 @@ type ReadWriteCloser interface {
 
 // SerialTransport implements Transport over a serial connection.
 type SerialTransport struct {
+	mu     sync.Mutex
 	rw     ReadWriteCloser
 	addr   string
 	closed bool
@@ -29,6 +31,8 @@ func NewSerial(rwc ReadWriteCloser, addr string) (*SerialTransport, error) {
 }
 
 func (t *SerialTransport) Read(p []byte) (int, error) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	if t.closed {
 		return 0, errors.New("transport: serial port closed")
 	}
@@ -36,6 +40,8 @@ func (t *SerialTransport) Read(p []byte) (int, error) {
 }
 
 func (t *SerialTransport) Write(p []byte) (int, error) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	if t.closed {
 		return 0, errors.New("transport: serial port closed")
 	}
@@ -43,6 +49,8 @@ func (t *SerialTransport) Write(p []byte) (int, error) {
 }
 
 func (t *SerialTransport) Close() error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	if t.closed {
 		return nil
 	}
@@ -55,5 +63,7 @@ func (t *SerialTransport) Addr() string {
 }
 
 func (t *SerialTransport) Alive() bool {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	return !t.closed
 }

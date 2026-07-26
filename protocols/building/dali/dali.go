@@ -39,6 +39,8 @@ func (c *daliCodec) Encode(req *kernel.Request) ([]byte, error) {
 
 	if v, ok := req.Metadata["address"].(byte); ok {
 		addr = v
+	} else if v, ok := req.Metadata["address"].(float64); ok {
+		addr = byte(v)
 	} else {
 		addr = BroadcastAddr
 	}

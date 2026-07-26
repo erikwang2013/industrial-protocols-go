@@ -18,6 +18,9 @@ func (p *OpcuaProtocol) Variants() []string         { return []string{"binary"} 
 func (p *OpcuaProtocol) DefaultPort() int           { return 4840 }
 
 func (p *OpcuaProtocol) NewCodec(v string) (kernel.Codec, error) {
+	if v != "binary" {
+		return nil, fmt.Errorf("opcua: unsupported variant %q", v)
+	}
 	return &opcuaCodec{}, nil
 }
 

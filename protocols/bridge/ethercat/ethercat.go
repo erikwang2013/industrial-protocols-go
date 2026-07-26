@@ -78,16 +78,7 @@ func (c *ethercatCodec) Encode(req *kernel.Request) ([]byte, error) {
 func (c *ethercatCodec) Decode(data []byte) (*kernel.Response, error) {
 	line := strings.TrimSpace(string(data))
 
-	if strings.Contains(line, "0x") {
-		return &kernel.Response{
-			Metadata: map[string]any{"raw": line},
-		}, nil
-	}
-
-	// Try hex parsing
-	cleaned := strings.TrimPrefix(line, "0x")
-	cleaned = strings.ReplaceAll(cleaned, " ", "")
-	parsed, err := parseHex(cleaned)
+	parsed, err := parseHex(line)
 	if err == nil && len(parsed) > 0 {
 		return &kernel.Response{
 			Data:     parsed,
@@ -102,9 +93,14 @@ func (c *ethercatCodec) Decode(data []byte) (*kernel.Response, error) {
 }
 
 func parseHex(s string) ([]byte, error) {
+	s = strings.TrimPrefix(s, "0x")
+	s = strings.TrimPrefix(s, "0X")
 	s = strings.ReplaceAll(s, " ", "")
 	if len(s)%2 != 0 {
 		s = "0" + s
+	}
+	if len(s) == 0 {
+		return nil, fmt.Errorf("empty")
 	}
 	result := make([]byte, len(s)/2)
 	for i := 0; i < len(s); i += 2 {

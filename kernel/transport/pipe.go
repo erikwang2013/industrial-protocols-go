@@ -7,9 +7,10 @@ import "io"
 // PipeTransport wraps io.ReadCloser and io.WriteCloser as a Transport.
 // It is used for in-process connections, e.g. bridging to sub-process stdin/stdout.
 type PipeTransport struct {
-	r    io.ReadCloser
-	w    io.WriteCloser
-	addr string
+	r      io.ReadCloser
+	w      io.WriteCloser
+	addr   string
+	closed bool
 }
 
 // NewPipeTransport creates a PipeTransport from a reader, writer, and address label.
@@ -20,9 +21,10 @@ func NewPipeTransport(r io.ReadCloser, w io.WriteCloser, addr string) *PipeTrans
 func (t *PipeTransport) Read(p []byte) (int, error)  { return t.r.Read(p) }
 func (t *PipeTransport) Write(p []byte) (int, error) { return t.w.Write(p) }
 func (t *PipeTransport) Close() error {
+	t.closed = true
 	t.r.Close()
 	_ = t.w.Close()
 	return nil
 }
 func (t *PipeTransport) Addr() string { return t.addr }
-func (t *PipeTransport) Alive() bool  { return true }
+func (t *PipeTransport) Alive() bool  { return !t.closed && t.r != nil && t.w != nil }

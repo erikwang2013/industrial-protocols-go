@@ -41,9 +41,14 @@ func ReadyHandler(address string) (pipeline.Handler, error) {
 		if err != nil {
 			return nil, err
 		}
-		tr.Write(raw)
+		if _, err := tr.Write(raw); err != nil {
+			return nil, err
+		}
 		buf := make([]byte, 4096)
-		n, _ := tr.Read(buf)
+		n, err := tr.Read(buf)
+		if err != nil {
+			return nil, err
+		}
 		return codec.Decode(buf[:n])
 	}), nil
 }

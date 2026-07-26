@@ -15,7 +15,7 @@ const (
 	lightbusCmdWrite = 0x02
 )
 
-// LightbusProtocol implements the keinel.Protocol interface for Lightbus
+// LightbusProtocol implements the kernel.Protocol interface for Lightbus
 // gateways (Beckhoff fiber optic ring).
 type LightbusProtocol struct{}
 

@@ -8,7 +8,7 @@ import (
 	"github.com/erikwang2013/industrial-protocols-go/kernel"
 )
 
-// AsInterfaceProtocol implements the keinel.Protocol interface for AS-Interface
+// AsInterfaceProtocol implements the kernel.Protocol interface for AS-Interface
 // gateways (Bihl+Wiedemann / Pepperl+Fuchs).
 type AsInterfaceProtocol struct{}
 
@@ -37,7 +37,7 @@ func (c *asinterfaceCodec) Encode(req *kernel.Request) ([]byte, error) {
 	return []byte(cmd), nil
 }
 
-// Decode returns the raw gateway response as a keinel.Response.
+// Decode returns the raw gateway response as a kernel.Response.
 func (c *asinterfaceCodec) Decode(data []byte) (*kernel.Response, error) {
 	return &kernel.Response{Data: data}, nil
 }

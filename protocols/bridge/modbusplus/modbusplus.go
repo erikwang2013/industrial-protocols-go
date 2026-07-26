@@ -15,7 +15,7 @@ const (
 	mbpCmdWrite = 0x02
 )
 
-// ModbusPlusProtocol implements the keinel.Protocol interface for Modbus Plus
+// ModbusPlusProtocol implements the kernel.Protocol interface for Modbus Plus
 // gateways (Schneider SA85/BM85 bridge).
 type ModbusPlusProtocol struct{}
 

@@ -15,7 +15,7 @@ const (
 	cclinkIECmdWrite = 0x02
 )
 
-// CCLinkIEProtocol implements the keinel.Protocol interface for CC-Link IE
+// CCLinkIEProtocol implements the kernel.Protocol interface for CC-Link IE
 // Field gateways (Mitsubishi MELSEC gateway).
 type CCLinkIEProtocol struct{}
 

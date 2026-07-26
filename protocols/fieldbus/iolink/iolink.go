@@ -8,7 +8,7 @@ import (
 	"github.com/erikwang2013/industrial-protocols-go/kernel"
 )
 
-// IOLinkProtocol implements the keinel.Protocol interface for IO-Link
+// IOLinkProtocol implements the kernel.Protocol interface for IO-Link
 // masters (ifm / Balluff gateway).
 type IOLinkProtocol struct{}
 
@@ -37,7 +37,7 @@ func (c *iolinkCodec) Encode(req *kernel.Request) ([]byte, error) {
 	return []byte(cmd), nil
 }
 
-// Decode returns the raw gateway response as a keinel.Response.
+// Decode returns the raw gateway response as a kernel.Response.
 func (c *iolinkCodec) Decode(data []byte) (*kernel.Response, error) {
 	return &kernel.Response{Data: data}, nil
 }

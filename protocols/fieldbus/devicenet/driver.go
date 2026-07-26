@@ -37,9 +37,14 @@ func ReadyHandler(driver func() (bridge.Bridge, kernel.Codec, error)) (pipeline.
 		pipeline.Timeout(5 * time.Second),
 	)(func(ctx context.Context, req *kernel.Request) (*kernel.Response, error) {
 		raw, _ := codec.Encode(req)
-		tr.Write(raw)
+				if _, err := tr.Write(raw); err != nil {
+				return nil, err
+			}
 		buf := make([]byte, 64)
-		n, _ := tr.Read(buf)
+			n, err := tr.Read(buf)
+			if err != nil {
+				return nil, err
+			}
 		return codec.Decode(buf[:n])
 	}), nil
 }

@@ -31,10 +31,18 @@ func ReadyHandler(iface string, nodeID byte) (pipeline.Handler, error) {
 	return pipeline.Chain(
 		pipeline.Timeout(5 * time.Second),
 	)(func(ctx context.Context, req *kernel.Request) (*kernel.Response, error) {
-		raw, _ := c.Encode(req)
-		tr.Write(raw)
+			raw, err := c.Encode(req)
+			if err != nil {
+				return nil, err
+			}
+				if _, err := tr.Write(raw); err != nil {
+				return nil, err
+			}
 		buf := make([]byte, 64)
-		n, _ := tr.Read(buf)
+			n, err := tr.Read(buf)
+			if err != nil {
+				return nil, err
+			}
 		return c.Decode(buf[:n])
 	}), nil
 }

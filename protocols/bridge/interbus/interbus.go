@@ -15,7 +15,7 @@ const (
 	interbusCmdWrite = 0x02
 )
 
-// InterbusProtocol implements the keinel.Protocol interface for Interbus
+// InterbusProtocol implements the kernel.Protocol interface for Interbus
 // gateways (Phoenix Contact IBS).
 type InterbusProtocol struct{}
 

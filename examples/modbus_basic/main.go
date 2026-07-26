@@ -21,7 +21,10 @@ func main() {
 	}
 	defer tr.Close()
 
-	codec, _ := modbus.NewCodec("tcp")
+	codec, err := modbus.NewCodec("tcp")
+	if err != nil {
+		log.Fatalf("codec: %v", err)
+	}
 
 	handler := func(ctx context.Context, req *kernel.Request) (*kernel.Response, error) {
 		if req.Metadata == nil {

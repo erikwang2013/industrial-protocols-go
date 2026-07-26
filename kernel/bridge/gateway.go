@@ -60,4 +60,4 @@ func (t *gatewayTransport) Read(p []byte) (int, error)  { return t.conn.Read(p) 
 func (t *gatewayTransport) Write(p []byte) (int, error) { return t.conn.Write(p) }
 func (t *gatewayTransport) Close() error                { return t.conn.Close() }
 func (t *gatewayTransport) Addr() string                { return t.addr }
-func (t *gatewayTransport) Alive() bool                 { return true }
+func (t *gatewayTransport) Alive() bool { return t.conn != nil }

@@ -8,7 +8,7 @@ import (
 	"github.com/erikwang2013/industrial-protocols-go/kernel"
 )
 
-// FoundationFieldbusProtocol implements the keinel.Protocol interface for
+// FoundationFieldbusProtocol implements the kernel.Protocol interface for
 // Foundation Fieldbus (H1/HSE) via a gateway bridge (NI USB-8486 / Softing FFusb).
 type FoundationFieldbusProtocol struct{}
 
@@ -37,7 +37,7 @@ func (c *foundationfieldbusCodec) Encode(req *kernel.Request) ([]byte, error) {
 	return []byte(cmd), nil
 }
 
-// Decode returns the raw gateway response as a keinel.Response.
+// Decode returns the raw gateway response as a kernel.Response.
 func (c *foundationfieldbusCodec) Decode(data []byte) (*kernel.Response, error) {
 	return &kernel.Response{Data: data}, nil
 }

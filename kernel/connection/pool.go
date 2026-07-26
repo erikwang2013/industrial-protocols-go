@@ -79,12 +79,11 @@ func (p *ConnPool) Put(conn net.Conn) {
 		conn.Close()
 		return
 	}
-	p.mu.Unlock()
 
 	select {
 	case p.conns <- conn:
+		p.mu.Unlock()
 	default:
-		p.mu.Lock()
 		p.active--
 		p.mu.Unlock()
 		conn.Close()

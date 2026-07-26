@@ -15,7 +15,7 @@ const (
 	worldFIPConsume  = 0x02
 )
 
-// WorldFIPProtocol implements the keinel.Protocol interface for WorldFIP
+// WorldFIPProtocol implements the kernel.Protocol interface for WorldFIP
 // gateways (FIP gateway / FIPIO agent).
 type WorldFIPProtocol struct{}
 

@@ -18,6 +18,9 @@ func (p *HartIPProtocol) Variants() []string { return []string{"tcp", "udp"} }
 func (p *HartIPProtocol) DefaultPort() int   { return 5094 }
 
 func (p *HartIPProtocol) NewCodec(v string) (kernel.Codec, error) {
+	if v != "tcp" && v != "udp" {
+		return nil, fmt.Errorf("hartip: unsupported variant %q", v)
+	}
 	return &hartIPCodec{hartProto: &hart.HartProtocol{}}, nil
 }
 

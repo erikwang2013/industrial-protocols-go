@@ -78,11 +78,6 @@ func (c *kLineCodec) Decode(data []byte) (*kernel.Response, error) {
 		return &kernel.Response{Metadata: map[string]any{"fast_init_sync": true}}, nil
 	}
 
-	// Response: Format(0x48) + Source + Target + SID + Data[] + CS
-	if len(data) < 2 {
-		return nil, fmt.Errorf("kline: response too short")
-	}
-
 	// Verify checksum
 	expectedCS := checksum(data[:len(data)-1])
 	if expectedCS != data[len(data)-1] {

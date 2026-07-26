@@ -30,9 +30,14 @@ func ReadyHandler(iface string) (pipeline.Handler, error) {
 		pipeline.Timeout(5 * time.Second),
 	)(func(ctx context.Context, req *kernel.Request) (*kernel.Response, error) {
 		raw, _ := c.Encode(req)
-		tr.Write(raw)
+		if _, err := tr.Write(raw); err != nil {
+		return nil, err
+	}
 		buf := make([]byte, 64)
-		n, _ := tr.Read(buf)
+		n, err := tr.Read(buf)
+	if err != nil {
+		return nil, err
+	}
 		return c.Decode(buf[:n])
 	}), nil
 }

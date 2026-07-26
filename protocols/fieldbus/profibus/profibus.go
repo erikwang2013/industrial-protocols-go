@@ -8,7 +8,7 @@ import (
 	"github.com/erikwang2013/industrial-protocols-go/kernel"
 )
 
-// ProfibusProtocol implements the keinel.Protocol interface for PROFIBUS
+// ProfibusProtocol implements the kernel.Protocol interface for PROFIBUS
 // gateways (Anybus Communicator / Siemens CP 5611 proxy).
 type ProfibusProtocol struct{}
 
@@ -35,7 +35,7 @@ func (c *profibusCodec) Encode(req *kernel.Request) ([]byte, error) {
 	return data, nil
 }
 
-// Decode returns the raw gateway response as a keinel.Response.
+// Decode returns the raw gateway response as a kernel.Response.
 func (c *profibusCodec) Decode(data []byte) (*kernel.Response, error) {
 	return &kernel.Response{Data: data}, nil
 }

@@ -1,0 +1,9 @@
+vendor/
+.phpunit.result.cache
+.env
+*.log
+.claude
+.claude-flow
+.swarm
+.mcp.json
+ruvector.db

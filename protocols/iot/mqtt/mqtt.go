@@ -19,6 +19,9 @@ func (p *MqttProtocol) Variants() []string           { return []string{"tcp", "w
 func (p *MqttProtocol) DefaultPort() int             { return 1883 }
 
 func (p *MqttProtocol) NewCodec(v string) (kernel.Codec, error) {
+	if v != "tcp" && v != "ws" {
+		return nil, fmt.Errorf("mqtt: unsupported variant %q", v)
+	}
 	return &mqttCodec{}, nil
 }
 
@@ -73,11 +76,15 @@ func (c *mqttCodec) encodeConnect(req *kernel.Request) ([]byte, error) {
 	buf := &bytes.Buffer{}
 	buf.WriteByte(0x10)
 	payload := &bytes.Buffer{}
-	writeString(payload, "MQTT")
+	if err := writeString(payload, "MQTT"); err != nil {
+		return nil, err
+	}
 	payload.WriteByte(4)
 	payload.WriteByte(2)
 	binary.Write(payload, binary.BigEndian, keepAlive)
-	writeString(payload, clientID)
+	if err := writeString(payload, clientID); err != nil {
+		return nil, err
+	}
 	encodeRemainingLength(buf, payload.Len())
 	buf.Write(payload.Bytes())
 	return buf.Bytes(), nil
@@ -87,7 +94,9 @@ func (c *mqttCodec) encodePublish(req *kernel.Request) ([]byte, error) {
 	buf := &bytes.Buffer{}
 	buf.WriteByte(0x30)
 	payload := &bytes.Buffer{}
-	writeString(payload, req.Address)
+	if err := writeString(payload, req.Address); err != nil {
+		return nil, err
+	}
 	payload.Write(req.Data)
 	encodeRemainingLength(buf, payload.Len())
 	buf.Write(payload.Bytes())
@@ -99,7 +108,9 @@ func (c *mqttCodec) encodeSubscribe(req *kernel.Request) ([]byte, error) {
 	buf.WriteByte(0x82)
 	payload := &bytes.Buffer{}
 	binary.Write(payload, binary.BigEndian, uint16(1))
-	writeString(payload, req.Address)
+	if err := writeString(payload, req.Address); err != nil {
+		return nil, err
+	}
 	payload.WriteByte(0)
 	encodeRemainingLength(buf, payload.Len())
 	buf.Write(payload.Bytes())
@@ -149,7 +160,10 @@ func decodeRemainingLength(data []byte) (int, int) {
 	return 0, 0
 }
 
-func writeString(w io.Writer, s string) {
-	binary.Write(w, binary.BigEndian, uint16(len(s)))
-	w.Write([]byte(s))
+func writeString(w io.Writer, s string) error {
+	if err := binary.Write(w, binary.BigEndian, uint16(len(s))); err != nil {
+		return err
+	}
+	_, err := w.Write([]byte(s))
+	return err
 }
