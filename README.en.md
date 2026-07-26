@@ -188,85 +188,85 @@ Built-in middleware:
 
 ### Installation
 
-The kernel library is required. Protocol modules are imported on demand. All modules share version `v1.1.1`.
+The kernel library is required. Protocol modules are imported on demand. All modules share version `v1.1.2`.
 
 ```bash
 # Kernel (required)
-go get github.com/erikwang2013/industrial-protocols-go/kernel@v1.1.1
+go get github.com/erikwang2013/industrial-protocols-go/kernel@v1.1.2
 ```
 
 **Industrial Ethernet (5):**
 
 ```bash
-go get github.com/erikwang2013/industrial-protocols-go/protocols/ethernet/modbus@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/ethernet/bacnet@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/ethernet/ethernetip@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/ethernet/opcua@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/ethernet/profinet@v1.1.1
+go get github.com/erikwang2013/industrial-protocols-go/protocols/ethernet/modbus@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/ethernet/bacnet@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/ethernet/ethernetip@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/ethernet/opcua@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/ethernet/profinet@v1.1.2
 ```
 
 **Fieldbus (11):**
 
 ```bash
-go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/hart@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/cclink@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/dnp3@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/iec61850@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/profibus@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/canopen@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/devicenet@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/foundationfieldbus@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/asinterface@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/iolink@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/cclinkie@v1.1.1
+go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/hart@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/cclink@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/dnp3@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/iec61850@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/profibus@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/canopen@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/devicenet@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/foundationfieldbus@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/asinterface@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/iolink@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/fieldbus/cclinkie@v1.1.2
 ```
 
 **IoT / Messaging (2):**
 
 ```bash
-go get github.com/erikwang2013/industrial-protocols-go/protocols/iot/mqtt@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/iot/hartip@v1.1.1
+go get github.com/erikwang2013/industrial-protocols-go/protocols/iot/mqtt@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/iot/hartip@v1.1.2
 ```
 
 **Automotive (5):**
 
 ```bash
-go get github.com/erikwang2013/industrial-protocols-go/protocols/automotive/lin@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/automotive/kline@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/automotive/flexray@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/automotive/saej1850@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/automotive/most@v1.1.1
+go get github.com/erikwang2013/industrial-protocols-go/protocols/automotive/lin@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/automotive/kline@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/automotive/flexray@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/automotive/saej1850@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/automotive/most@v1.1.2
 ```
 
 **Building / Lighting (2):**
 
 ```bash
-go get github.com/erikwang2013/industrial-protocols-go/protocols/building/dali@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/building/lonworks@v1.1.1
+go get github.com/erikwang2013/industrial-protocols-go/protocols/building/dali@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/building/lonworks@v1.1.2
 ```
 
 **Hardware Bridges (12):**
 
 ```bash
-go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/ethercat@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/powerlink@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/sercos@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/sercos1@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/controlnet@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/interbus@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/worldfip@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/lightbus@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/modbusplus@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/isa100@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/wirelesshart@v1.1.1
+go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/ethercat@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/powerlink@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/sercos@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/sercos1@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/controlnet@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/interbus@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/worldfip@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/lightbus@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/modbusplus@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/isa100@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/bridge/wirelesshart@v1.1.2
 ```
 
 **System Bus (3):**
 
 ```bash
-go get github.com/erikwang2013/industrial-protocols-go/protocols/system/pci@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/system/vme@v1.1.1
-go get github.com/erikwang2013/industrial-protocols-go/protocols/system/cpci@v1.1.1
+go get github.com/erikwang2013/industrial-protocols-go/protocols/system/pci@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/system/vme@v1.1.2
+go get github.com/erikwang2013/industrial-protocols-go/protocols/system/cpci@v1.1.2
 ```
 
 > **pkg.go.dev URL:** `https://pkg.go.dev/github.com/erikwang2013/industrial-protocols-go/` + submodule path (e.g. `/kernel`, `/protocols/ethernet/modbus`)
