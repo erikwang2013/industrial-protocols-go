@@ -54,3 +54,59 @@ func TestCircuitBreaker_ResetsAfterCooldown(t *testing.T) {
 		t.Log("breaker reset after cooldown")
 	}
 }
+
+func TestCircuitBreaker_SuccessResetsFailures(t *testing.T) {
+	cb := NewCircuitBreaker(3, time.Hour)
+	shouldFail := true
+	h := func(ctx context.Context, req *kernel.Request) (*kernel.Response, error) {
+		if shouldFail {
+			return nil, errors.New("fail")
+		}
+		return &kernel.Response{}, nil
+	}
+	wrapped := Chain(cb.Middleware())(h)
+
+	_, _ = wrapped(context.Background(), &kernel.Request{}) // fail 1
+	shouldFail = false
+	_, _ = wrapped(context.Background(), &kernel.Request{}) // success: must reset the counter
+	shouldFail = true
+	_, _ = wrapped(context.Background(), &kernel.Request{}) // fail 1
+	_, _ = wrapped(context.Background(), &kernel.Request{}) // fail 2
+
+	if cb.open {
+		t.Error("breaker should still be closed after 2 non-consecutive failures")
+	}
+	if cb.failures != 2 {
+		t.Errorf("expected 2 failures recorded, got %d", cb.failures)
+	}
+
+	if _, err := wrapped(context.Background(), &kernel.Request{}); err == nil { // fail 3 -> open
+		t.Error("expected failure from handler")
+	}
+	_, err := wrapped(context.Background(), &kernel.Request{}) // now open
+	if !errors.Is(err, kernel.ErrCircuitOpen) {
+		t.Errorf("expected ErrCircuitOpen, got %v", err)
+	}
+}
+
+func TestCircuitBreaker_HalfOpenAllowsRequest(t *testing.T) {
+	cb := NewCircuitBreaker(1, 20*time.Millisecond)
+	fail := func(ctx context.Context, req *kernel.Request) (*kernel.Response, error) {
+		return nil, errors.New("fail")
+	}
+	wrapped := Chain(cb.Middleware())(fail)
+
+	_, _ = wrapped(context.Background(), &kernel.Request{}) // open
+	if _, err := wrapped(context.Background(), &kernel.Request{}); !errors.Is(err, kernel.ErrCircuitOpen) {
+		t.Fatalf("expected ErrCircuitOpen while open, got %v", err)
+	}
+
+	time.Sleep(40 * time.Millisecond) // past cooldown
+	_, err := wrapped(context.Background(), &kernel.Request{})
+	if errors.Is(err, kernel.ErrCircuitOpen) {
+		t.Error("half-open request should reach the handler, not be rejected")
+	}
+	if err == nil {
+		t.Error("handler should have failed again")
+	}
+}

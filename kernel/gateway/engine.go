@@ -24,6 +24,9 @@ func (e *GatewayEngine) Add(rule Rule) { e.rules = append(e.rules, rule) }
 // Transform 执行一次协议转换：读源设备 → 解码 → 映射 → 编码 → 写目标设备。
 func (e *GatewayEngine) Transform(ctx context.Context, srcTransport, dstTransport transport.Transport, req *kernel.Request) (*kernel.Response, error) {
 	for _, rule := range e.rules {
+		if rule.Src == nil || rule.Dst == nil || rule.Map == nil {
+			continue // 跳过未配置完整的规则
+		}
 		srcName := rule.Src.Name()
 		srcCodec, err := rule.Src.NewCodec(srcName)
 		if err != nil {

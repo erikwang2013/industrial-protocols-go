@@ -108,13 +108,13 @@ func (c *enipCodec) encodeReadTag(session uint32, tagName string) ([]byte, error
 	cipReq[6] = byte(len(tagName))
 	copy(cipReq[7:], tagName)
 
-	totalLen := 16 + len(cipReq)
+	totalLen := 4 + len(cipReq) // 24 字节头部之后的 item 头(4) + CIP 请求
 	binary.LittleEndian.PutUint16(hdr[2:4], uint16(totalLen))
 	// Interface handle (4) + Timeout (2) + ItemCount (2) + ItemID (2) + ItemLength (2)
 	binary.LittleEndian.PutUint32(hdr[12:16], 0) // interface handle
 	binary.LittleEndian.PutUint16(hdr[16:18], 0) // timeout
 
-	payload := make([]byte, 16+len(cipReq))
+	payload := make([]byte, 28+len(cipReq))
 	copy(payload, hdr)
 	binary.LittleEndian.PutUint32(payload[12:16], 0)     // interface handle
 	binary.LittleEndian.PutUint16(payload[20:22], 0)      // timeout

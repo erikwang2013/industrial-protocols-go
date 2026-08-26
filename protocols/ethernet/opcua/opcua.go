@@ -60,8 +60,8 @@ func (c *opcuaCodec) encodeHello(req *kernel.Request) ([]byte, error) {
 	buf := &bytes.Buffer{}
 	buf.WriteString("HEL")
 	buf.WriteByte('F')
+	sizePos := buf.Len() // 消息长度字段位于偏移 4
 	binary.Write(buf, binary.LittleEndian, uint32(0))
-	sizePos := buf.Len()
 	binary.Write(buf, binary.LittleEndian, uint32(0))
 	binary.Write(buf, binary.LittleEndian, uint32(0))
 	binary.Write(buf, binary.LittleEndian, uint32(65536))
@@ -79,10 +79,13 @@ func (c *opcuaCodec) encodeOpenSecureChannel() ([]byte, error) {
 	buf := &bytes.Buffer{}
 	buf.WriteString("OPN")
 	buf.WriteByte('F')
+	sizePos := buf.Len() // 消息长度字段位于偏移 4
 	binary.Write(buf, binary.LittleEndian, uint32(0))
 	binary.Write(buf, binary.LittleEndian, uint32(44))
 	for i := 0; i < 7; i++ {
 		binary.Write(buf, binary.LittleEndian, uint32(0))
 	}
-	return buf.Bytes(), nil
+	raw := buf.Bytes()
+	binary.LittleEndian.PutUint32(raw[sizePos:], uint32(len(raw)))
+	return raw, nil
 }

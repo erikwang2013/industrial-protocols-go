@@ -70,12 +70,16 @@ func (c *kLineCodec) Encode(req *kernel.Request) ([]byte, error) {
 }
 
 func (c *kLineCodec) Decode(data []byte) (*kernel.Response, error) {
-	if len(data) < 5 {
-		return nil, fmt.Errorf("kline: frame too short (%d bytes)", len(data))
+	if len(data) == 0 {
+		return nil, fmt.Errorf("kline: empty frame")
 	}
 
-	if data[0] == FastInitSync {
+	if data[0] == FastInitSync { // 单字节同步帧是完整信号
 		return &kernel.Response{Metadata: map[string]any{"fast_init_sync": true}}, nil
+	}
+
+	if len(data) < 5 {
+		return nil, fmt.Errorf("kline: frame too short (%d bytes)", len(data))
 	}
 
 	// Verify checksum

@@ -117,6 +117,9 @@ func (c *dnp3Codec) decodeTPDU(data []byte) (*kernel.Response, error) {
 	}
 
 	apduEnd := apduStart + (length - 5) // subtract control+dest+src
+	if length < 5 || apduEnd > len(data) {
+		return nil, fmt.Errorf("dnp3: invalid APDU length %d", length)
+	}
 	if apduEnd+2 <= len(data) {
 		apduCRC := binary.LittleEndian.Uint16(data[apduEnd : apduEnd+2])
 		expectedAPDUCRC := crc16DNP(data[apduStart:apduEnd])
@@ -151,7 +154,7 @@ func (c *dnp3Codec) decodeAPDU(apdu []byte) (*kernel.Response, error) {
 func crc16DNP(data []byte) uint16 {
 	var crc uint16 = 0x0000
 	for _, b := range data {
-		temp := crc ^ uint16(b)
+		temp := (crc ^ uint16(b)) & 0xFF
 		for i := 0; i < 8; i++ {
 			if temp&1 != 0 {
 				temp = (temp >> 1) ^ 0xA6BC

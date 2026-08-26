@@ -48,3 +48,55 @@ func TestRetry_Exhausted(t *testing.T) {
 		t.Errorf("expected ErrRetryExhausted, got %v", err)
 	}
 }
+
+func TestBackoffFuncs(t *testing.T) {
+	lin := LinearBackoff(2 * time.Millisecond)
+	if got := lin(3); got != 6*time.Millisecond {
+		t.Errorf("LinearBackoff(2ms)(3) = %v, want 6ms", got)
+	}
+
+	exp := ExponentialBackoff(2 * time.Millisecond)
+	if got := exp(1); got != 2*time.Millisecond {
+		t.Errorf("ExponentialBackoff(2ms)(1) = %v, want 2ms", got)
+	}
+	if got := exp(3); got != 8*time.Millisecond {
+		t.Errorf("ExponentialBackoff(2ms)(3) = %v, want 8ms", got)
+	}
+	if got := exp(4); got != 16*time.Millisecond {
+		t.Errorf("ExponentialBackoff(2ms)(4) = %v, want 16ms", got)
+	}
+
+	jit := JitterBackoff(2 * time.Millisecond)
+	if got := jit(2); got != 6*time.Millisecond {
+		t.Errorf("JitterBackoff(2ms)(2) = %v, want 6ms", got)
+	}
+}
+
+func TestRetry_ZeroAttempts(t *testing.T) {
+	calls := 0
+	h := func(ctx context.Context, req *kernel.Request) (*kernel.Response, error) {
+		calls++
+		return nil, errors.New("x")
+	}
+	wrapped := Chain(Retry(0, nil))(h)
+	if _, err := wrapped(context.Background(), &kernel.Request{}); !errors.Is(err, kernel.ErrRetryExhausted) {
+		t.Errorf("expected ErrRetryExhausted, got %v", err)
+	}
+	if calls != 0 {
+		t.Errorf("handler should not be called with maxAttempts=0, got %d calls", calls)
+	}
+}
+
+func TestRetry_ContextCancelled(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	alwaysFail := func(ctx context.Context, req *kernel.Request) (*kernel.Response, error) {
+		return nil, errors.New("always fail")
+	}
+	wrapped := Chain(Retry(3, LinearBackoff(time.Hour)))(alwaysFail)
+	_, err := wrapped(ctx, &kernel.Request{})
+	if !errors.Is(err, context.Canceled) {
+		t.Errorf("expected context.Canceled, got %v", err)
+	}
+}

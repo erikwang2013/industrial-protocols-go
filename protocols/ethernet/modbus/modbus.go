@@ -211,6 +211,9 @@ func (c *modbusCodec) decodePDU(pdu []byte) (*kernel.Response, error) {
 	}
 	fn := pdu[0]
 	if fn&0x80 != 0 {
+		if len(pdu) < 2 {
+			return nil, fmt.Errorf("modbus: exception PDU too short")
+		}
 		return nil, &kernel.ProtocolError{
 			Code:    fmt.Sprintf("%02X", pdu[1]),
 			Message: modbusException(pdu[1]),
@@ -222,7 +225,11 @@ func (c *modbusCodec) decodePDU(pdu []byte) (*kernel.Response, error) {
 		if len(pdu) < 3 {
 			return nil, fmt.Errorf("modbus: PDU too short")
 		}
-		return &kernel.Response{Address: "0", Data: pdu[2 : 2+pdu[1]]}, nil
+		n := int(pdu[1])
+		if 2+n > len(pdu) {
+			return nil, fmt.Errorf("modbus: byte count %d exceeds PDU length %d", n, len(pdu))
+		}
+		return &kernel.Response{Address: "0", Data: pdu[2 : 2+n]}, nil
 	case 5, 6:
 		return &kernel.Response{Address: "0"}, nil
 	case 16:

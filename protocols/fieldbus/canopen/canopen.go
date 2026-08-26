@@ -98,8 +98,8 @@ func (c *canopenCodec) Encode(req *kernel.Request) ([]byte, error) {
 
 // Decode deserializes a CAN frame into a kernel.Response.
 func (c *canopenCodec) Decode(data []byte) (*kernel.Response, error) {
-	if len(data) < 4 {
-		return nil, fmt.Errorf("canopen: frame too short")
+	if len(data) < 8 { // 线格式固定 8 字节：4 字节 ID + 4 字节数据
+		return nil, fmt.Errorf("canopen: frame too short (%d bytes)", len(data))
 	}
 	f := unmarshalCAN(data)
 	meta := map[string]any{

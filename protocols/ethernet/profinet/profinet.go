@@ -68,6 +68,9 @@ func (c *pnCodec) Decode(data []byte) (*kernel.Response, error) {
 	serviceType := data[3]
 	xid := binary.BigEndian.Uint32(data[4:8])
 	blockLen := binary.BigEndian.Uint16(data[8:10])
+	if len(data) < 10+int(blockLen) {
+		return nil, fmt.Errorf("profinet: block length %d exceeds frame length %d", blockLen, len(data))
+	}
 	blocks := data[10 : 10+blockLen]
 
 	return &kernel.Response{
