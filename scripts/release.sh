@@ -48,7 +48,7 @@ fi
 run git push origin --tags
 
 if command -v gh >/dev/null 2>&1; then
-  run gh release create "$NEW" --repo erikwang2013/industrial-protocols-go --title "v$NEW" --generate-notes
+  run gh release create "$NEW" --repo erikwang2013/industrial-protocols-go --title "$NEW" --generate-notes
 else
   echo "提示：未安装 gh CLI，跳过 GitHub Release 创建（tags 已推送）。"
 fi
