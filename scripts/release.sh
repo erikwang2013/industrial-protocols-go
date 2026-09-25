@@ -31,6 +31,9 @@ echo "最新版本: $LATEST -> 新版本: $NEW"
 
 run git tag -a "$NEW" -m "release $NEW"
 
+# kernel 也被各协议模块 require，必须跟着发版（与 kernel/vX.Y.Z 模式一致）
+run git tag -a "kernel/$NEW" -m "release $NEW"
+
 # 各协议模块增量打标签（与现有 protocols/<path>/vX.Y.Z 模式一致）
 while IFS= read -r mod; do
   t="protocols/$mod/$NEW"
